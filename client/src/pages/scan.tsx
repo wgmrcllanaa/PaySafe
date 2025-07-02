@@ -92,7 +92,7 @@ export default function Scan() {
                   <Link href="/" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200">Home</Link>
                   <Link href="/scan" className="text-blue-400 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200">Scan</Link>
                   <Link href="/history" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200">History</Link>
-                  <a href="#" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200">About</a>
+                  <Link href="/about" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200">About</Link>
                 </div>
               </div>
 
@@ -116,7 +116,7 @@ export default function Scan() {
                   <Link href="/" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors duration-200">Home</Link>
                   <Link href="/scan" className="text-blue-400 hover:text-white block px-3 py-2 text-base font-medium transition-colors duration-200">Scan</Link>
                   <Link href="/history" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors duration-200">History</Link>
-                  <a href="#" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors duration-200">About</a>
+                  <Link href="/about" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors duration-200">About</Link>
                 </div>
               </div>
             )}
