@@ -38,9 +38,10 @@ The application follows a modern full-stack architecture with clear separation b
 - **Accessibility**: Built on Radix UI primitives ensuring WCAG compliance
 
 ### Database Schema
-- **Users Table**: Basic user authentication with username and password
-- **Drizzle Configuration**: PostgreSQL dialect with migrations in dedicated folder
-- **Type-Safe Operations**: Generated TypeScript types from database schema
+- **Users Table**: Basic user authentication with username, password, and timestamps
+- **Scan Results Table**: Stores message scans with platform, scam detection results, probability scores, and analysis reasons
+- **Drizzle Configuration**: PostgreSQL dialect with array support for storing analysis reasons
+- **Type-Safe Operations**: Generated TypeScript types from database schema with proper relations
 
 ## Data Flow
 
@@ -94,7 +95,8 @@ The architecture supports easy scaling and deployment to various platforms inclu
 
 ## Changelog
 
-- July 02, 2025. Initial setup
+- July 02, 2025: Initial setup with homepage and scan page
+- July 02, 2025: Added PostgreSQL database with scan results storage
 
 ## User Preferences
 

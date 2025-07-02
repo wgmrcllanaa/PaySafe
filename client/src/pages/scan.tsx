@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,47 +30,41 @@ export default function Scan() {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [isScanning, setIsScanning] = useState(false);
 
-  const handleScan = async () => {
+  const scanMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/scan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: message.trim(),
+          platform,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to scan message");
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setScanResult({
+        status: data.status as "SCAM" | "SAFE",
+        probability: data.probability,
+        reasons: data.reasons,
+      });
+    },
+    onError: (error) => {
+      console.error("Scan failed:", error);
+      // Set error state or show toast
+    },
+  });
+
+  const handleScan = () => {
     if (!message.trim()) return;
-
-    setIsScanning(true);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Mock scan result based on message content
-    const suspiciousKeywords = ['free', 'winner', 'urgent', 'click here', 'congratulations', 'limited time', 'act now', 'claim', 'prize'];
-    const messageText = message.toLowerCase();
-    const foundKeywords = suspiciousKeywords.filter(keyword => messageText.includes(keyword));
-    
-    const isScam = foundKeywords.length > 0 || messageText.includes('http') || messageText.includes('verify account');
-    const probability = isScam ? Math.floor(Math.random() * 30) + 70 : Math.floor(Math.random() * 25) + 5;
-    
-    const reasons = [];
-    if (foundKeywords.length > 0) {
-      reasons.push(`Suspicious keywords found: ${foundKeywords.join(', ')}`);
-    }
-    if (messageText.includes('http')) {
-      reasons.push('Contains suspicious links');
-    }
-    if (messageText.includes('verify') || messageText.includes('account')) {
-      reasons.push('Requests account verification');
-    }
-    if (messageText.includes('urgent') || messageText.includes('act now')) {
-      reasons.push('Uses urgency tactics');
-    }
-    if (!isScam) {
-      reasons.push('No suspicious patterns detected');
-      reasons.push('Language appears legitimate');
-    }
-
-    setScanResult({
-      status: isScam ? "SCAM" : "SAFE",
-      probability,
-      reasons: reasons.slice(0, 3) // Limit to 3 reasons
-    });
-    
-    setIsScanning(false);
+    scanMutation.mutate();
   };
 
   return (
@@ -181,10 +177,10 @@ export default function Scan() {
                 {/* Scan Button */}
                 <Button
                   onClick={handleScan}
-                  disabled={!message.trim() || isScanning}
+                  disabled={!message.trim() || !platform || scanMutation.isPending}
                   className="w-full py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white font-semibold rounded-xl transition-all duration-300 text-lg border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isScanning ? (
+                  {scanMutation.isPending ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                       Analyzing...
