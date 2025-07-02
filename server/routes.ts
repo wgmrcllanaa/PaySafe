@@ -85,6 +85,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete scan result endpoint
+  app.delete("/api/scans/:id", async (req, res) => {
+    try {
+      const scanId = parseInt(req.params.id);
+      
+      if (isNaN(scanId)) {
+        return res.status(400).json({ error: "Invalid scan ID" });
+      }
+
+      // Check if scan exists
+      const existingScan = await storage.getScanResult(scanId);
+      if (!existingScan) {
+        return res.status(404).json({ error: "Scan not found" });
+      }
+
+      await storage.deleteScanResult(scanId);
+      res.json({ message: "Scan deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting scan result:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

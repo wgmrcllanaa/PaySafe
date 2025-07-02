@@ -91,7 +91,7 @@ export default function Scan() {
                 <div className="ml-10 flex items-baseline space-x-8">
                   <Link href="/" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200">Home</Link>
                   <Link href="/scan" className="text-blue-400 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200">Scan</Link>
-                  <a href="#" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200">History</a>
+                  <Link href="/history" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200">History</Link>
                   <a href="#" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200">About</a>
                 </div>
               </div>
@@ -115,7 +115,7 @@ export default function Scan() {
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 glass-effect-blue mt-2 rounded-lg">
                   <Link href="/" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors duration-200">Home</Link>
                   <Link href="/scan" className="text-blue-400 hover:text-white block px-3 py-2 text-base font-medium transition-colors duration-200">Scan</Link>
-                  <a href="#" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors duration-200">History</a>
+                  <Link href="/history" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors duration-200">History</Link>
                   <a href="#" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors duration-200">About</a>
                 </div>
               </div>

@@ -9,6 +9,7 @@ export interface IStorage {
   createScanResult(scanResult: InsertScanResult): Promise<ScanResult>;
   getScanResults(userId?: number): Promise<ScanResult[]>;
   getScanResult(id: number): Promise<ScanResult | undefined>;
+  deleteScanResult(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -48,6 +49,10 @@ export class DatabaseStorage implements IStorage {
   async getScanResult(id: number): Promise<ScanResult | undefined> {
     const [scanResult] = await db.select().from(scanResults).where(eq(scanResults.id, id));
     return scanResult || undefined;
+  }
+
+  async deleteScanResult(id: number): Promise<void> {
+    await db.delete(scanResults).where(eq(scanResults.id, id));
   }
 }
 
