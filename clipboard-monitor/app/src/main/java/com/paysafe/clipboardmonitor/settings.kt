@@ -36,7 +36,7 @@ fun SettingsScreen() {
 
     var backendUrl by remember {
         mutableStateOf(
-            prefs.getString("backend_url", "http://192.168.254.121:5001/predict") ?: ""
+            prefs.getString("backend_url", "https://your-railway-app.railway.app/api/clipboard") ?: ""
         )
     }
 
