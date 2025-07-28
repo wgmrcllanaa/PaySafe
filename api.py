@@ -18,6 +18,9 @@ TOKENIZER_PATH = os.path.join(MODEL_DIR, "tokenizer.pkl")
 LSTM_FULL_MODEL_PATH = os.path.join(MODEL_DIR, "lstm_feature_extractor.h5")
 THRESHOLD_PATH = os.path.join(MODEL_DIR, "optimal_threshold.txt")
 
+# Get port from environment variable (Railway sets PORT)
+PORT = int(os.environ.get('PORT', 5001))
+
 # --- Globals ---
 svm_model = None
 tokenizer = None
@@ -76,6 +79,11 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 with app.app_context():
     load_models()
+
+# Health check endpoint
+@app.route("/", methods=["GET"])
+def health_check():
+    return jsonify({"status": "healthy", "service": "PaySafe Python API"})
 
 # --- API Endpoint ---
 @app.route("/predict", methods=["POST"])
@@ -148,4 +156,4 @@ def handle_disconnect():
 
 # --- Run Server ---
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5001, debug=True)
+    socketio.run(app, host="0.0.0.0", port=PORT, debug=True)

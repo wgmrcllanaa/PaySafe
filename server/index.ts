@@ -13,6 +13,9 @@ app.use(express.urlencoded({ extended: false }));
 let latestClipboard: string | null = null;
 let wsClients: Set<any> = new Set();
 
+// Get Python API URL from environment variable
+const PYTHON_API_URL = process.env.PYTHON_API_URL || "http://localhost:5001";
+
 // Logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
@@ -49,7 +52,7 @@ async function registerRoutes(app: express.Express) {
     try {
       const { message } = req.body;
 
-      const response = await axios.post("http://localhost:5001/predict", {
+      const response = await axios.post(`${PYTHON_API_URL}/predict`, {
         message,
       });
 
@@ -70,7 +73,7 @@ async function registerRoutes(app: express.Express) {
       latestClipboard = clipboard; // <-- Store latest clipboard
 
       // Forward to Flask /predict
-      const response = await axios.post("http://localhost:5001/predict", {
+      const response = await axios.post(`${PYTHON_API_URL}/predict`, {
         message: clipboard,
       });
 

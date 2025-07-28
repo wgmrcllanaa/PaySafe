@@ -22,128 +22,148 @@ PaySafeSecurity/
 └── venv/                   # Python virtual environment
 ```
 
-## Deployment to Vercel
+## 🚀 Railway Deployment (Recommended)
+
+Railway is the best option for deploying this full-stack application as it can handle both Node.js and Python services in one place.
+
+### Step 1: Deploy to Railway
+
+1. **Go to [railway.app](https://railway.app)** and sign up with your GitHub account
+2. **Create a new project** and select "Deploy from GitHub repo"
+3. **Connect your repository**: `https://github.com/wgmrcllanaa/PaySafe.git`
+4. **Railway will automatically detect** the configuration and deploy both services
+
+### Step 2: Configure Environment Variables
+
+After deployment, go to your Railway project dashboard and add these environment variables:
+
+#### For the main service (Node.js):
+```
+NODE_ENV=production
+PYTHON_API_URL=https://your-python-service-url.railway.app
+```
+
+#### For the Python service:
+```
+PORT=5001
+```
+
+### Step 3: Access Your Application
+
+- **Main Application**: `https://your-app-name.railway.app`
+- **Python API**: `https://your-python-service.railway.app`
+
+## 🛠️ Local Development
 
 ### Prerequisites
 
-1. **Vercel Account**: Sign up at [vercel.com](https://vercel.com)
-2. **Vercel CLI**: Install with `npm i -g vercel`
-3. **Python API**: Deploy your Python Flask API separately (see below)
+- Node.js 18+
+- Python 3.8+
+- npm or yarn
 
-### Step 1: Deploy Python API
+### Setup
 
-Since Vercel doesn't support Python directly, you'll need to deploy your Python API separately. Recommended options:
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/wgmrcllanaa/PaySafe.git
+   cd PaySafe
+   ```
 
-- **Railway**: [railway.app](https://railway.app)
-- **Render**: [render.com](https://render.com)
-- **Heroku**: [heroku.com](https://heroku.com)
+2. **Install dependencies**:
+   ```bash
+   # Install Node.js dependencies
+   npm install
+   
+   # Install Python dependencies
+   pip install -r requirements.txt
+   ```
 
-#### Railway Deployment (Recommended)
+3. **Start the development servers**:
+   ```bash
+   # Terminal 1: Start Python API
+   python api.py
+   
+   # Terminal 2: Start Node.js backend
+   npm run dev
+   
+   # Terminal 3: Start React frontend
+   npm run dev:client
+   ```
 
-1. Create a `requirements.txt` file in your project root:
-```txt
-flask==2.3.3
-flask-cors==4.0.0
-numpy==1.24.3
-scikit-learn==1.3.0
-tensorflow==2.13.0
-joblib==1.3.2
-```
+4. **Access the application**:
+   - Frontend: http://localhost:5173
+   - Backend: http://localhost:3000
+   - Python API: http://localhost:5001
 
-2. Create a `Procfile`:
-```
-web: python api.py
-```
+## 📱 Android App
 
-3. Deploy to Railway and get your API URL
+The Android application is located in the `clipboard-monitor/` directory. To build and run:
 
-### Step 2: Deploy to Vercel
+1. Open the project in Android Studio
+2. Build and run on your device or emulator
+3. The app will automatically connect to your deployed backend
 
-1. **Install Dependencies**:
-```bash
-npm install
-```
+## 🔧 Configuration
 
-2. **Set Environment Variables**:
-Create a `.env.local` file:
-```env
-PYTHON_API_URL=https://your-python-api.railway.app
-```
+### Environment Variables
 
-3. **Deploy**:
-```bash
-vercel
-```
+- `NODE_ENV`: Set to `production` for deployment
+- `PYTHON_API_URL`: URL of your Python API service
+- `PORT`: Port for the Python API (Railway sets this automatically)
 
-4. **Configure Environment Variables in Vercel Dashboard**:
-   - Go to your Vercel project dashboard
-   - Navigate to Settings > Environment Variables
-   - Add `PYTHON_API_URL` with your Python API URL
+### Model Files
 
-### Step 3: Update API Configuration
+Ensure these files are present in the `model/` directory:
+- `calibrated_svm_model.joblib`
+- `tokenizer.pkl`
+- `lstm_feature_extractor.h5`
+- `optimal_threshold.txt`
 
-Update the `api/index.ts` file with your Python API URL:
+## 🚀 Alternative Deployment Options
 
-```typescript
-const pythonApiUrl = process.env.PYTHON_API_URL || 'https://your-python-api.railway.app';
-```
+### Vercel (Frontend Only)
 
-## Local Development
+If you prefer Vercel for the frontend:
 
-### Frontend
-```bash
-npm run dev:client
-```
+1. Deploy the Python API to Railway first
+2. Set the `PYTHON_API_URL` environment variable in Vercel
+3. Deploy the frontend to Vercel
 
-### Backend
-```bash
-npm run dev
-```
+### Render
 
-### Python API
-```bash
-cd venv
-source bin/activate  # On Windows: venv\Scripts\activate
-python api.py
-```
+You can also deploy to Render.com:
+1. Create a new Web Service
+2. Connect your GitHub repository
+3. Set the build command and start command
+4. Configure environment variables
 
-## Environment Variables
+## 📊 API Endpoints
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `PYTHON_API_URL` | URL of your deployed Python API | Yes |
-| `NODE_ENV` | Environment (development/production) | No |
+### Python API (`/predict`)
+- **POST**: Analyze text for security threats
+- **Body**: `{"message": "text to analyze"}`
+- **Response**: `{"label": "SAFE|UNSAFE|UNSURE", "confidence": 0.85}`
 
-## API Endpoints
+### Node.js Backend
+- **POST** `/api/predict`: Proxy to Python API
+- **POST** `/api/clipboard`: Handle clipboard data from Android
+- **WebSocket** `/ws_clipboard`: Real-time clipboard sync
 
-- `POST /api/predict` - Predict security threat from text
-- `POST /api/clipboard` - Process clipboard content
-- `GET /ws_clipboard` - WebSocket endpoint for real-time updates
+## 🤝 Contributing
 
-## Troubleshooting
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-### Common Issues
+## 📄 License
 
-1. **Python API Connection Error**:
-   - Ensure your Python API is deployed and accessible
-   - Check the `PYTHON_API_URL` environment variable
-   - Verify CORS settings in your Python API
+This project is licensed under the MIT License.
 
-2. **Build Errors**:
-   - Clear Vercel cache: `vercel --force`
-   - Check TypeScript errors: `npm run check`
+## 🆘 Support
 
-3. **WebSocket Issues**:
-   - WebSocket support in Vercel is limited
-   - Consider using a separate WebSocket service like Socket.io
-
-### Support
-
-For issues and questions:
-- Check the [Vercel documentation](https://vercel.com/docs)
-- Review the [Railway documentation](https://docs.railway.app)
-- Open an issue in this repository
-
-## License
-
-MIT License - see LICENSE file for details. 
+If you encounter any issues:
+1. Check the Railway logs for errors
+2. Verify environment variables are set correctly
+3. Ensure all model files are present
+4. Check that both services are running and accessible 
