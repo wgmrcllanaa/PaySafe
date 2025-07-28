@@ -16,7 +16,7 @@ A comprehensive security application that monitors clipboard content for potenti
 PaySafeSecurity/
 ├── client/                 # React frontend
 ├── server/                 # Express.js backend
-├── api/                    # Vercel serverless functions
+├── python-api/             # Python ML API (separate service)
 ├── clipboard-monitor/      # Android application
 ├── model/                  # ML models and data
 └── venv/                   # Python virtual environment
@@ -24,20 +24,30 @@ PaySafeSecurity/
 
 ## 🚀 Railway Deployment (Recommended)
 
-Railway is the best option for deploying this full-stack application as it can handle both Node.js and Python services in one place.
+Railway is the best option for deploying this full-stack application. We'll deploy **two separate services**:
 
-### Step 1: Deploy to Railway
+1. **Node.js Backend** (main service)
+2. **Python API** (ML service)
+
+### Step 1: Deploy Node.js Backend
 
 1. **Go to [railway.app](https://railway.app)** and sign up with your GitHub account
 2. **Create a new project** and select "Deploy from GitHub repo"
 3. **Connect your repository**: `https://github.com/wgmrcllanaa/PaySafe.git`
-4. **Railway will automatically detect** the configuration and deploy both services
+4. **Railway will automatically detect** the configuration and deploy the Node.js service
 
-### Step 2: Configure Environment Variables
+### Step 2: Deploy Python API
 
-After deployment, go to your Railway project dashboard and add these environment variables:
+1. **In the same Railway project**, click "New Service"
+2. **Select "GitHub Repo"** and choose the same repository
+3. **Set the source directory** to `python-api`
+4. **Railway will deploy** the Python API as a separate service
 
-#### For the main service (Node.js):
+### Step 3: Configure Environment Variables
+
+After both services are deployed, go to your Railway project dashboard:
+
+#### For the Node.js service:
 ```
 NODE_ENV=production
 PYTHON_API_URL=https://your-python-service-url.railway.app
@@ -48,9 +58,9 @@ PYTHON_API_URL=https://your-python-service-url.railway.app
 PORT=5001
 ```
 
-### Step 3: Access Your Application
+### Step 4: Access Your Application
 
-- **Main Application**: `https://your-app-name.railway.app`
+- **Main Application**: `https://your-nodejs-service.railway.app`
 - **Python API**: `https://your-python-service.railway.app`
 
 ## 🛠️ Local Development
