@@ -14,60 +14,35 @@ import {
   CheckCircle,
   Plus
 } from "lucide-react";
-
-type ScanHistoryItem = {
-  id: number;
-  message: string;
-  platform: string;
-  status: "SCAM" | "SAFE";
-  probability: number;
-  reasons: string[];
-  createdAt: string;
-};
+import { useUser } from "@/contexts/UserContext";
+import { useScanHistory, ScanHistoryItem } from "@/hooks/useScanHistory";
+import { useToast } from "@/hooks/use-toast";
 
 export default function History() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [, setLocation] = useLocation();
-  const queryClient = useQueryClient();
+  const { userId } = useUser();
+  const { scanHistory, isLoading, deleteScan } = useScanHistory(userId);
+  const { toast } = useToast();
 
-  // Fetch scan history
-  const { data: scanHistory, isLoading } = useQuery({
-    queryKey: ["scan-history"],
-    queryFn: async () => {
-      const response = await fetch("/api/scans");
-      if (!response.ok) {
-        throw new Error("Failed to fetch scan history");
-      }
-      return response.json() as ScanHistoryItem[];
-    },
-  });
-
-  // Delete scan mutation
-  const deleteScanMutation = useMutation({
-    mutationFn: async (scanId: number) => {
-      const response = await fetch(`/api/scans/${scanId}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete scan");
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["scan-history"] });
-    },
-    onError: (error) => {
-      console.error("Failed to delete scan:", error);
-    },
-  });
-
-  const handleDeleteScan = (scanId: number) => {
+  const handleDeleteScan = (scanId: string | undefined) => {
+    if (!scanId) return;
     if (confirm("Are you sure you want to delete this scan result?")) {
-      deleteScanMutation.mutate(scanId);
+      deleteScan(scanId);
+      toast({
+        title: "Scan deleted!",
+        description: "The scan result was removed from your history.",
+      });
+    } else {
+      toast({
+        title: "Delete cancelled",
+        description: "The scan result was not deleted.",
+      });
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -193,7 +168,6 @@ export default function History() {
                     <thead>
                       <tr className="border-b border-white/10">
                         <th className="text-left py-4 px-2 text-gray-300 font-medium">Message Preview</th>
-                        <th className="text-left py-4 px-2 text-gray-300 font-medium">Platform</th>
                         <th className="text-left py-4 px-2 text-gray-300 font-medium">Date Scanned</th>
                         <th className="text-left py-4 px-2 text-gray-300 font-medium">Result</th>
                         <th className="text-left py-4 px-2 text-gray-300 font-medium">Actions</th>
@@ -201,7 +175,7 @@ export default function History() {
                     </thead>
                     <tbody>
                       {scanHistory.map((scan) => (
-                        <tr key={scan.id} className="border-b border-white/5 hover:bg-white/5 transition-colors duration-200">
+                        <tr key={scan.id} className="border-b border-white/5 hover:bg-white/5 transition-colors duration-200 animate-fade-in-up">
                           <td className="py-4 px-2">
                             <div className="max-w-xs">
                               <p className="text-white text-sm leading-relaxed">
@@ -209,50 +183,26 @@ export default function History() {
                               </p>
                             </div>
                           </td>
+                          <td className="py-4 px-2 text-gray-300 text-sm">{formatDate(scan.timestamp)}</td>
                           <td className="py-4 px-2">
-                            <span className="text-gray-300 text-sm capitalize">
-                              {scan.platform}
-                            </span>
-                          </td>
-                          <td className="py-4 px-2">
-                            <span className="text-gray-300 text-sm">
-                              {formatDate(scan.createdAt)}
-                            </span>
-                          </td>
-                          <td className="py-4 px-2">
-                            <div className="flex items-center gap-2">
-                              {scan.status === "SCAM" ? (
-                                <>
-                                  <div className="w-8 h-8 bg-red-500/20 rounded-full flex items-center justify-center">
-                                    <AlertTriangle className="w-4 h-4 text-red-400" />
-                                  </div>
-                                  <div>
-                                    <div className="text-red-400 font-medium text-sm">SCAM</div>
-                                    <div className="text-gray-400 text-xs">{scan.probability}% likely</div>
-                                  </div>
-                                </>
-                              ) : (
-                                <>
-                                  <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
-                                    <CheckCircle className="w-4 h-4 text-green-400" />
-                                  </div>
-                                  <div>
-                                    <div className="text-green-400 font-medium text-sm">SAFE</div>
-                                    <div className="text-gray-400 text-xs">{scan.probability}% confidence</div>
-                                  </div>
-                                </>
-                              )}
-                            </div>
+                            {scan.isFraudulent ? (
+                              <span className="inline-flex items-center px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-semibold">
+                                <AlertTriangle className="w-4 h-4 mr-1" /> SCAM ({scan.riskScore}%)
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-semibold">
+                                <CheckCircle className="w-4 h-4 mr-1" /> SAFE ({scan.riskScore}%)
+                              </span>
+                            )}
                           </td>
                           <td className="py-4 px-2">
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon"
                               onClick={() => handleDeleteScan(scan.id)}
-                              disabled={deleteScanMutation.isPending}
-                              className="text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200"
+                              className="text-red-400 hover:bg-red-500/10"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-5 h-5" />
                             </Button>
                           </td>
                         </tr>
@@ -275,14 +225,14 @@ export default function History() {
                 
                 <GlassmorphicCard variant="blue" className="p-6 text-center">
                   <div className="text-2xl font-bold text-red-400 mb-2">
-                    {scanHistory.filter(scan => scan.status === "SCAM").length}
+                    {scanHistory.filter(scan => scan.isFraudulent).length}
                   </div>
                   <div className="text-gray-300 text-sm">Scams Detected</div>
                 </GlassmorphicCard>
                 
                 <GlassmorphicCard variant="blue" className="p-6 text-center">
                   <div className="text-2xl font-bold text-green-400 mb-2">
-                    {scanHistory.filter(scan => scan.status === "SAFE").length}
+                    {scanHistory.filter(scan => !scan.isFraudulent).length}
                   </div>
                   <div className="text-gray-300 text-sm">Safe Messages</div>
                 </GlassmorphicCard>

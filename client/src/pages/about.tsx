@@ -19,19 +19,22 @@ export default function About() {
       name: "Willyn Grace Marcellana",
       role: "CEO & CMO",
       education: "3rd Year Computer Science Student, Web Science Specialization from Adamson University",
-      contribution: "Leads the overall vision and marketing strategy, ensuring PaySafe reaches users who need protection most."
+      contribution: "Leads the overall vision and marketing strategy, ensuring PaySafe reaches users who need protection most.",
+      image: "/willyn.jpeg"
     },
     {
       name: "Constante Dizon",
       role: "CTO & COO",
       education: "3rd Year Computer Science Student, Data Science Specialization from Adamson University",
-      contribution: "Developed the hybrid LSTM-SVM machine learning model and manages technical operations."
+      contribution: "Developed the hybrid LSTM-SVM machine learning model and manages technical operations.",
+      image: "/constante.png"
     },
     {
       name: "Shirlee Manipon",
       role: "CFO",
       education: "3rd Year Computer Science Student, Web Science Specialization from Adamson University",
-      contribution: "Manages financial planning and ensures sustainable development of the platform."
+      contribution: "Manages financial planning and ensures sustainable development of the platform.",
+      image: "/shirlee.png"
     }
   ];
 
@@ -135,12 +138,18 @@ export default function About() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {teamMembers.map((member, index) => (
-                  <GlassmorphicCard key={index} variant="blue" className="text-center group hover:bg-white/10 transition-all duration-300">
-                    {/* Profile Photo Placeholder */}
+                  <GlassmorphicCard
+                    key={index}
+                    variant="blue"
+                    className="text-center group transition-all duration-200 transform hover:scale-102 hover:shadow-xl hover:-translate-y-1 animate-fade-in-up"
+                  >
+                    {/* Profile Photo */}
                     <div className="mb-6">
-                      <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full mx-auto flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                        <GraduationCap className="text-white w-12 h-12" />
-                      </div>
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-24 h-24 rounded-full mx-auto object-cover ring-2 ring-white/70 shadow-md group-hover:scale-105 transition-transform duration-200 bg-white/10"
+                      />
                     </div>
 
                     {/* Member Info */}

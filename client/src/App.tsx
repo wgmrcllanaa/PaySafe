@@ -8,6 +8,10 @@ import Scan from "@/pages/scan";
 import History from "@/pages/history";
 import About from "@/pages/about";
 import NotFound from "@/pages/not-found";
+import { UserProvider } from "@/contexts/UserContext";
+
+// Optional: Import any API config or context if needed in future
+// import { ApiProvider } from "@/lib/api-context"; 
 
 function Router() {
   return (
@@ -24,12 +28,14 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <UserProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </UserProvider>
   );
 }
 

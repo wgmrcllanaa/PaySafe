@@ -1,10 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { insertScanResultSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Scan message endpoint
   app.post("/api/scan", async (req, res) => {
     try {
       const { message, platform, userId } = req.body;
@@ -13,7 +10,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Message and platform are required" });
       }
 
-      // Mock AI analysis logic
       const suspiciousKeywords = ['free', 'winner', 'urgent', 'click here', 'congratulations', 'limited time', 'act now', 'claim', 'prize'];
       const messageText = message.toLowerCase();
       const foundKeywords = suspiciousKeywords.filter((keyword: string) => messageText.includes(keyword));
@@ -39,22 +35,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         reasons.push('Language appears legitimate');
       }
 
-      // Save scan result to database
-      const scanResult = await storage.createScanResult({
-        userId: userId || null,
-        message,
-        platform,
-        isScam,
-        scamProbability: probability.toString(),
-        reasons: reasons.slice(0, 3), // Limit to 3 reasons
-      });
-
       res.json({
-        id: scanResult.id,
+        id: "mock-id",
         status: isScam ? "SCAM" : "SAFE",
         probability,
         reasons: reasons.slice(0, 3),
-        createdAt: scanResult.createdAt,
+        createdAt: new Date().toISOString(),
       });
     } catch (error) {
       console.error("Error scanning message:", error);
@@ -62,30 +48,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get scan history endpoint
   app.get("/api/scans", async (req, res) => {
     try {
       const { userId } = req.query;
-      const scanResults = await storage.getScanResults(userId ? Number(userId) : undefined);
       
-      const formattedResults = scanResults.map(result => ({
-        id: result.id,
-        message: result.message,
-        platform: result.platform,
-        status: result.isScam ? "SCAM" : "SAFE",
-        probability: Number(result.scamProbability),
-        reasons: result.reasons,
-        createdAt: result.createdAt,
-      }));
-
-      res.json(formattedResults);
+      res.json([
+        {
+          id: "mock-id-1",
+          message: "Free money! Click here to claim your prize!",
+          platform: "Twitter",
+          status: "SCAM",
+          probability: 85,
+          reasons: ["Suspicious keywords found: free, prize", "Contains suspicious links", "Requests account verification"],
+          createdAt: "2023-10-27T10:00:00.000Z",
+        },
+        {
+          id: "mock-id-2",
+          message: "Your account has been verified. Click here to log in.",
+          platform: "Facebook",
+          status: "SAFE",
+          probability: 50,
+          reasons: ["No suspicious patterns detected", "Language appears legitimate"],
+          createdAt: "2023-10-27T11:00:00.000Z",
+        },
+      ]);
     } catch (error) {
       console.error("Error fetching scan results:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   });
 
-  // Delete scan result endpoint
   app.delete("/api/scans/:id", async (req, res) => {
     try {
       const scanId = parseInt(req.params.id);
@@ -94,13 +86,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid scan ID" });
       }
 
-      // Check if scan exists
-      const existingScan = await storage.getScanResult(scanId);
-      if (!existingScan) {
-        return res.status(404).json({ error: "Scan not found" });
-      }
-
-      await storage.deleteScanResult(scanId);
       res.json({ message: "Scan deleted successfully" });
     } catch (error) {
       console.error("Error deleting scan result:", error);

@@ -19,11 +19,13 @@ import {
   TriangleAlert,
   InfoIcon
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHeaderBlurred, setIsHeaderBlurred] = useState(false);
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,6 +38,10 @@ export default function Home() {
 
   const handleScanMessage = () => {
     setLocation("/scan");
+    toast({
+      title: "Navigating to Scan",
+      description: "You are being redirected to the Scan page.",
+    });
   };
 
   const handleLearnMore = () => {
@@ -275,7 +281,7 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
               {/* Step 1 */}
               <div className="text-center group">
-                <GlassmorphicCard className="mb-6 group-hover:bg-white/10 transition-all duration-300">
+                <GlassmorphicCard className="mb-8 animate-fade-in-up">
                   <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <span className="text-white font-bold text-xl">1</span>
                   </div>
@@ -289,7 +295,7 @@ export default function Home() {
 
               {/* Step 2 */}
               <div className="text-center group">
-                <GlassmorphicCard className="mb-6 group-hover:bg-white/10 transition-all duration-300">
+                <GlassmorphicCard className="mb-8 animate-fade-in-up">
                   <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <span className="text-white font-bold text-xl">2</span>
                   </div>
@@ -304,7 +310,7 @@ export default function Home() {
 
               {/* Step 3 */}
               <div className="text-center group">
-                <GlassmorphicCard className="mb-6 group-hover:bg-white/10 transition-all duration-300">
+                <GlassmorphicCard className="mb-8 animate-fade-in-up">
                   <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <span className="text-white font-bold text-xl">3</span>
                   </div>
